@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Teague Henry" />
+
+<meta name="date" content="2018-06-27" />
+
+<title>Getting Started with netjack</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Getting Started with <code>netjack</code></h1>
+<h4 class="author"><em>Teague Henry</em></h4>
+<h4 class="date"><em>2018-06-27</em></h4>
+
+
+
+<p>This vignette provides an introduction to the <code>netjack</code> package and overviews common data input and analysis pipelines. For a tutorial about creating custom network functions and network statistics see the “Custom Functions in <code>netjack</code>” vignette.</p>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Samples of <em>registered</em> networks, or networks that consist of the same node set, are increasing common in a variety of scientific fields. The <code>netjack</code> package implements an framework to let researchers quickly manipulate and analyze large samples of registered networks, as well as develop custom functionality that builds on the existing <code>netjack</code> framework.</p>
+<p>In this vignette, we go over the following procedures:</p>
+<ul>
+<li>Basic data objects and function classes in <code>netjack</code></li>
+<li>Data Input</li>
+<li>Network Manipulation Functions</li>
+<li>Network Statistic Functions</li>
+<li>Difference, Group and Group Difference Testing.</li>
+</ul>
+</div>
+<div id="basic-data-objects-and-function-classes" class="section level2">
+<h2>Basic Data Objects and Function Classes</h2>
+<p><code>netjack</code> is built around a series of S4 classes that represent different levels of network manipulation, and functions that act on each level of network manipulation. This section describes these classes and functions at a summary level.</p>
+<p>The most basic data object is the <code>Net</code> object. This represents a single network, along with node level variables, such as partition assignments.</p>
+<p>A <code>NetSample</code> object represents a collection of <code>Net</code> objects, along with network level variables. For example, if each network in the sample represents a single individual’s functional brain network, a network level variable could be the diagnostic status of each individual.</p>
+<p>The <code>Net</code> and <code>NetSample</code> objects are representations of raw data. To work with these data objects, the <code>net_apply</code> function can be used to apply a <em>network manipulation function</em>. This class of functions take a single network, and perform a series of manipulations on the network, returning the manipulated networks. As an example the <code>node_jackknife()</code> function applied to a <code>Net</code> object returns a set of <code>Net</code> objects corresponding to the original network with each node removed in turn.</p>
+<p>To represent the output of a <code>net_apply</code>, the S4 classes <code>NetSet</code> and <code>NetSampleSet</code> are used. These classes represent both the original <code>Net</code> or <code>NetSample</code>, as well as the product of the <code>net_apply</code>.</p>
+<p>One common procedure that network analysis uses is the calculation of various network statistics. In <code>netjack</code> <em>network statistic functions</em> can be used via the <code>net_stat_apply</code> function to quickly be calculated for both <code>NetSet</code> and <code>NetSampleSet</code> objects. The output of a <code>net_stat_apply</code> is a <code>NetStatSet</code> or <code>NetSampleStatSet</code> object.</p>
+<p><code>netjack</code> implements several statistical testing procedures that are described below. Additionally, to extract a <code>data.frame</code> of the calculated network statistics from a <code>NetStatSet</code> or <code>NetSampleStatSet</code> object, <code>to_data_frame()</code> can be used.</p>
+<div id="data-input" class="section level3">
+<h3>Data Input</h3>
+<p>To illustrate the various features of <code>netjack</code>, two simulated datasets are provided, GroupA and GroupB. Networks can be loaded into the <code>netjack</code> framework from adjacency matrices, either as single Net objects, or more commonly as one NetSample object.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(netjack)
+<span class="kw">data</span>(<span class="st">&quot;GroupA&quot;</span>)
+
+Subject1 &lt;-<span class="st"> </span><span class="kw">as_Net</span>(GroupA[[<span class="dv">1</span>]], <span class="st">&quot;Subject1&quot;</span>)
+<span class="kw">show</span>(Subject1)</code></pre></div>
+<pre><code>## Net 
+##  Net Name:  Subject1 
+##  Node Size:  20 
+##  Node variables:  index</code></pre>
+<p>Node Variables can be assigned during construction as a named list:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Subject2 &lt;-<span class="st"> </span><span class="kw">as_Net</span>(GroupA[[<span class="dv">2</span>]], <span class="st">&quot;Subject1&quot;</span>, <span class="dt">node.variables =</span> <span class="kw">list</span>(<span class="dt">community =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="kw">rep</span>(<span class="dv">2</span>,<span class="dv">10</span>))))
+
+<span class="kw">show</span>(Subject2)</code></pre></div>
+<pre><code>## Net 
+##  Net Name:  Subject1 
+##  Node Size:  20 
+##  Node variables:  index community</code></pre>
+<p>Typically, a researcher using <code>netjack</code> is analyzing a sample of registered networks rather than a single network. <code>NetSample</code> objects can be constructed in much the same way as a <code>Net</code> object can, using lists of adjacency matrices rather than a single matrix:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GroupASamp =<span class="st"> </span><span class="kw">as_NetSample</span>(GroupA, <span class="dt">net.names =</span> <span class="kw">as.character</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>) , <span class="dt">node.variables =</span> <span class="kw">list</span>(<span class="dt">community =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="dv">1</span>,<span class="dv">10</span>), <span class="kw">rep</span>(<span class="dv">2</span>,<span class="dv">10</span>))), <span class="dt">sample.variables =</span> <span class="kw">list</span>(<span class="dt">group =</span> <span class="kw">rep</span>(<span class="dv">1</span>, <span class="dv">20</span>)))
+
+<span class="kw">show</span>(GroupASamp)</code></pre></div>
+<pre><code>## Net Sample 
+##  Net Names:  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 
+##  Sample Variables:  group orig.net</code></pre>
+<p>Importantly, when a NetSample object is created, the list of node variables is applied to every network. This is appropriate in registered network applications, where for example, in neuroimaging networks, each node represents a specific brain region, and each node is the same for each subject.</p>
+<p>Sample variables represent network level characteristics. For example, if each network represents a functional connectivity network from a neuroimaging study, a sample variable might be the diagnostic status of a particular individual.</p>
+</div>
+<div id="network-manipulation-functions" class="section level3">
+<h3>Network Manipulation Functions</h3>
+<p>Once a sample of networks is represented as a <code>NetSample</code> object, a network manipulation function can be applied. As described previously, these functions change a network in some way. As an example, the <code>node_jackknife</code> function returns a set of networks, where each node has been removed in turn.</p>
+<p>Network manipulation functions can be applied via <code>net_apply</code> to a <code>Net</code> object to produce a <code>NetSet</code>, or can be applied via <code>net_apply</code> to a <code>NetSample</code> object to produce a <code>NetSampleSet</code></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Sub1Jackknifed &lt;-<span class="st"> </span><span class="kw">net_apply</span>(<span class="dt">network =</span> Subject1, <span class="dt">net.function =</span> <span class="st">&quot;node_jackknife&quot;</span>)
+
+<span class="kw">show</span>(Sub1Jackknifed)</code></pre></div>
+<pre><code>## Net Set
+## Applied Function: &quot;node_jackknife&quot;
+## Function Arguments: 
+## Original Network Name: Subject1
+## Contains 20 manipulated networks.</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GroupAJackknifed &lt;-<span class="st"> </span><span class="kw">net_apply</span>(<span class="dt">network =</span> GroupASamp, <span class="dt">net.function =</span> <span class="st">&quot;node_jackknife&quot;</span>)
+
+<span class="kw">show</span>(GroupAJackknifed)</code></pre></div>
+<pre><code>## Net Sample Set
+## Applied Function: &quot;node_jackknife&quot;
+## Function Arguments: 
+## Contains 20 NetSets</code></pre>
+<p>Network manipulation functions that involve node level variables can be used by including them in the <code>net.function.args</code> argument within <code>net_apply</code>. For example, <code>network_jackknife</code> removes sub-networks on the basis of a node level grouping variable.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GroupANetJackknifed &lt;-<span class="st"> </span><span class="kw">net_apply</span>(GroupASamp, <span class="dt">net.function =</span> <span class="st">&quot;network_jackknife&quot;</span>, <span class="dt">net.function.args =</span> <span class="kw">list</span>(<span class="dt">network.variable =</span> <span class="st">&quot;community&quot;</span>))
+
+<span class="kw">show</span>(GroupANetJackknifed)</code></pre></div>
+<pre><code>## Net Sample Set
+## Applied Function: &quot;network_jackknife&quot;
+## Function Arguments: 
+##  network.variable = community
+## Contains 20 NetSets</code></pre>
+<p>Once a network manipulation function has been applied, network statistics can be computed.</p>
+</div>
+<div id="network-statistic-functions" class="section level3">
+<h3>Network Statistic Functions</h3>
+<p>A network statistic is a single numerical summary of some aspect of a network’s structure or topology. <code>netjack</code> focuses on the analysis of networks at a network statistic level, and provides simple interfaces for calculating network statistics on collections of networks.</p>
+<p>Similar in structure to the network manipulation functions, network statistic functions are applied via a <code>net_stat_apply</code> function, which can be used with either a <code>NetSet</code> object, or a <code>NetSampleSet</code> object. This produces a <code>NetStatSet</code> and a <code>NetSampleStatSet</code> respectively.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Sub1JackknifedGlobEff &lt;-<span class="st"> </span><span class="kw">net_stat_apply</span>(Sub1Jackknifed, <span class="dt">net.stat.fun =</span> global_efficiency)
+
+<span class="kw">show</span>(Sub1JackknifedGlobEff)</code></pre></div>
+<pre><code>## 
+## Net Statistic Set 
+##  Applied Function:  &quot;node_jackknife&quot; 
+##  Function Arguments:  
+##  Applied Statistic Function:  global_efficiency 
+##  Statistic Function Arguments:   
+##  Original Network Name:  Subject1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GroupAJackknifedGlobEff &lt;-<span class="st"> </span><span class="kw">net_stat_apply</span>(GroupAJackknifed, <span class="dt">net.stat.fun =</span> global_efficiency)
+
+<span class="kw">show</span>(GroupAJackknifedGlobEff)</code></pre></div>
+<pre><code>## 
+## Net Sample Statistic Set 
+##  Applied Function:  &quot;node_jackknife&quot; 
+##  Function Arguments:  
+##  Applied Statistic Function:  global_efficiency 
+##  Statistic Function Arguments:   
+##  Original Network Names:  1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20</code></pre>
+<p>Once a <code>NetStatSet</code> or <code>NetSampleStatSet</code> has been computed, the computed network statistics can be extracted into a <code>data.frame</code> by using the <code>to_data_frame</code> function. The data frame returned is in long format, with a row for each manipulated network.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">Sub1Data =<span class="st"> </span><span class="kw">to_data_frame</span>(Sub1JackknifedGlobEff)
+
+<span class="kw">names</span>(Sub1Data)</code></pre></div>
+<pre><code>## [1] &quot;orig.net&quot;  &quot;orig.stat&quot; &quot;net.names&quot; &quot;nets.stat&quot; &quot;stat.name&quot;</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GroupAData =<span class="st"> </span><span class="kw">to_data_frame</span>(GroupAJackknifedGlobEff)
+
+<span class="kw">head</span>(GroupAData)</code></pre></div>
+<pre><code>##   orig.net orig.stat net.names nets.stat         stat.name group
+## 1        1 0.6447368         1 0.6403509 global_efficiency     1
+## 2        1 0.6447368         2 0.6432749 global_efficiency     1
+## 3        1 0.6447368         3 0.6461988 global_efficiency     1
+## 4        1 0.6447368         4 0.6403509 global_efficiency     1
+## 5        1 0.6447368         5 0.6491228 global_efficiency     1
+## 6        1 0.6447368         6 0.6491228 global_efficiency     1</code></pre>
+</div>
+<div id="difference-group-and-group-difference-testing." class="section level3">
+<h3>Difference, Group and Group Difference Testing.</h3>
+<p><code>netjack</code> implements three statistical testing procedures in easy to use functions for both tabular and graphical output. The first test is the <em>difference test</em> which assess if any specific network manipulation causes a significant difference from the original network in a given network statistic. This test is implemented with the <code>diff_test</code> and graphically with the <code>net_ggPlot</code> function. Plotting uses the <code>ggplot</code> package, making the aesthetic presentation easily manipulated.</p>
+<p>The example dataset <code>GroupA</code> has been generated so that the removal of node 10 will result in a significant difference in global efficiency from the original networks. Below are the full set of steps for this analysis:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">GroupASamp =<span class="st"> </span><span class="kw">as_NetSample</span>(GroupA, <span class="dt">net.names =</span> <span class="kw">as.character</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">20</span>))
+GroupAJackknifed =<span class="st"> </span><span class="kw">net_apply</span>(GroupASamp, <span class="dt">net.function =</span> <span class="st">&quot;node_jackknife&quot;</span>)
+GroupAJackknifedGlobEff =<span class="st"> </span><span class="kw">net_stat_apply</span>(GroupAJackknifed, <span class="dt">net.stat.fun =</span>  <span class="st">&quot;global_efficiency&quot;</span>)
+
+<span class="kw">diff_test</span>(GroupAJackknifedGlobEff)</code></pre></div>
+<pre><code>##             net.names          diff            p   adjusted.p
+## mean of x           1  0.0023245614 7.548641e-02 1.161329e-01
+## mean of x1         10 -0.1257156781 1.144533e-12 2.289065e-11
+## mean of x2         11  0.0032017544 1.426799e-03 9.285723e-03
+## mean of x3         12  0.0029093567 2.114492e-03 9.285723e-03
+## mean of x4         13  0.0004239766 7.472946e-01 7.866259e-01
+## mean of x5         14  0.0017397661 1.386111e-01 1.848149e-01
+## mean of x6         15  0.0018859649 3.286142e-02 6.572285e-02
+## mean of x7         16  0.0020321637 9.205373e-02 1.315053e-01
+## mean of x8         17  0.0011549708 3.240808e-01 3.600898e-01
+## mean of x9         18  0.0032017544 5.382591e-03 1.794197e-02
+## mean of x10        19  0.0024707602 4.495854e-02 8.174280e-02
+## mean of x11         2  0.0013011696 1.567161e-01 1.958951e-01
+## mean of x12        20  0.0001315789 8.786445e-01 8.786445e-01
+## mean of x13         3  0.0037865497 3.843974e-04 3.843974e-03
+## mean of x14         4  0.0024707602 1.850869e-02 4.627173e-02
+## mean of x15         5  0.0023245614 1.758724e-02 4.627173e-02
+## mean of x16         6  0.0033479532 2.321431e-03 9.285723e-03
+## mean of x17         7  0.0023245614 2.621901e-02 5.826446e-02
+## mean of x18         8  0.0018859649 6.155882e-02 1.025980e-01
+## mean of x19         9  0.0011549708 2.974065e-01 3.498900e-01</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">diff_test_ggPlot</span>(GroupAJackknifedGlobEff)</code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>The second test implemented is the group test. This examines differences between to sample level groups (such as healthy controls and individuals with a disorder) in a network statistic, subject to a network manipulation.</p>
+<p>In this example, <code>GroupA</code> has been simulated to have node 10 be important for global efficiency, while <code>GroupB</code> has node 15 as important for global efficiency. We combine these datasets into a single object, and perform the group testing now.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fullGroup =<span class="st"> </span><span class="kw">c</span>(GroupA, GroupB)
+
+fullSamp =<span class="st"> </span><span class="kw">as_NetSample</span>(fullGroup,<span class="dt">net.names =</span> <span class="kw">as.character</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">40</span>), <span class="dt">sample.variables =</span> <span class="kw">list</span>(<span class="dt">group =</span> <span class="kw">c</span>(<span class="kw">rep</span>(<span class="st">&quot;GroupA&quot;</span>, <span class="dv">20</span>), <span class="kw">rep</span>(<span class="st">&quot;GroupB&quot;</span>, <span class="dv">20</span>))))
+
+fullSampJackknifed =<span class="st"> </span><span class="kw">net_apply</span>(fullSamp, <span class="dt">net.function =</span> <span class="st">&quot;node_jackknife&quot;</span>)
+fullSampleJackknifedGlobEff =<span class="st"> </span><span class="kw">net_stat_apply</span>(fullSampJackknifed, <span class="dt">net.stat.fun =</span> <span class="st">&quot;global_efficiency&quot;</span>)
+
+<span class="kw">group_test</span>(fullSampleJackknifedGlobEff, <span class="dt">grouping.variable =</span> <span class="st">&quot;group&quot;</span>)</code></pre></div>
+<pre><code>##    net.names            p   adjusted.p
+## 1          1 3.479674e-01 1.000000e+00
+## 2         10 5.457061e-15 1.963308e-13
+## 3         11 6.055813e-01 1.000000e+00
+## 4         12 6.505909e-01 1.000000e+00
+## 5         13 1.402365e-01 1.000000e+00
+## 6         14 1.435786e-01 1.000000e+00
+## 7         15 3.240468e-16 2.331672e-14
+## 8         16 1.961826e-01 1.000000e+00
+## 9         17 9.077830e-02 1.000000e+00
+## 10        18 7.671224e-01 1.000000e+00
+## 11        19 2.873317e-01 1.000000e+00
+## 12         2 2.970671e-01 1.000000e+00
+## 13        20 1.230613e-01 1.000000e+00
+## 14         3 8.593489e-01 1.000000e+00
+## 15         4 2.796704e-01 1.000000e+00
+## 16         5 3.257748e-01 1.000000e+00
+## 17         6 7.125387e-01 1.000000e+00
+## 18         7 2.771352e-01 1.000000e+00
+## 19         8 1.800351e-01 1.000000e+00
+## 20         9 3.712339e-01 1.000000e+00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">group_test_ggPlot</span>(fullSampleJackknifedGlobEff, <span class="dt">grouping.variable=</span><span class="st">&quot;group&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>Finally, the group difference test assesses if the network manipulation has a differential impact on the network statistic between the groups. This test is implemented with <code>group_diff_test</code> and graphically with <code>netGroupDiff_ggPlot</code>.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">group_diff_test</span>(fullSampleJackknifedGlobEff, <span class="dt">grouping.variable =</span> <span class="st">&quot;group&quot;</span>)</code></pre></div>
+<pre><code>##    net.names            p   adjusted.p
+## 1          1 7.837022e-01 1.000000e+00
+## 2         10 5.474698e-19 1.969654e-17
+## 3         11 2.053881e-01 1.000000e+00
+## 4         12 3.727280e-02 6.202008e-01
+## 5         13 2.105888e-01 1.000000e+00
+## 6         14 2.348841e-01 1.000000e+00
+## 7         15 4.898286e-23 3.524552e-21
+## 8         16 5.036256e-01 1.000000e+00
+## 9         17 5.329649e-02 6.391563e-01
+## 10        18 1.113582e-01 1.000000e+00
+## 11        19 6.274374e-01 1.000000e+00
+## 12         2 9.032667e-01 1.000000e+00
+## 13        20 4.309656e-02 6.202008e-01
+## 14         3 1.857876e-02 4.456102e-01
+## 15         4 6.484607e-01 1.000000e+00
+## 16         5 9.900847e-01 1.000000e+00
+## 17         6 1.398629e-01 1.000000e+00
+## 18         7 7.441306e-01 1.000000e+00
+## 19         8 3.589458e-01 1.000000e+00
+## 20         9 7.695662e-01 1.000000e+00</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">group_diff_test_ggPlot</span>(fullSampleJackknifedGlobEff, <span class="dt">grouping.variable=</span><span class="st">&quot;group&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" style="display: block; margin: auto;" /></p>
+<p>From this, we can see that when node 10 or node 15 are removed, this results in a significantly different change from the original global efficiency value between Group A and Group B.</p>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
