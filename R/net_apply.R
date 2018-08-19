@@ -367,6 +367,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 
   results <- as.data.frame(do.call("rbind", results))
   results$adjusted.p = stats::p.adjust(results$p, method = p.adjust)
+  results$diff =
   return(results)
 }
 
@@ -448,8 +449,8 @@ toPlot = to_data_frame(netSampleStatSet)
   toPlot$diff = toPlot$nets.stat - toPlot$orig.stat
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
-      }
+      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
+    }
   }
   if(sort == "mean"){
     agg <- stats::aggregate(toPlot$diff, by = toPlot["net.names"], mean, na.rm = T)
@@ -472,7 +473,7 @@ toPlot = to_data_frame(netSampleStatSet)
 
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold)))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
-                                                                                                       paste0("p < ", p.threshold))) +ggplot2::theme_classic()
+                                                                                                       paste0("p < ", p.threshold))) +ggplot2::theme_classic()+ ggplot2::theme(legend.title=ggplot2::element_blank())
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0("Difference from Original ", toPlot$stat.name[1]))
@@ -510,7 +511,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
 
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+        toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
       }
   }
   if(sort == "mag"){
@@ -530,7 +531,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = nets.stat, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
                                                                                                        paste0("p < ", p.threshold)))+
-    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
+    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic() + ggplot2::theme(legend.title=ggplot2::element_blank())
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0(toPlot$stat.name[1]))
@@ -567,9 +568,9 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
 
   if(sort == "alpha"){
     if(!any(is.na(as.numeric(toPlot$net.names)))){
-      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(as.numeric(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]))))
+      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
     }
-  }
+    }
   if(sort == "mag"){
     agg <- stats::aggregate(toPlot$adjusted.p, by = toPlot["net.names"], mean, na.rm = T)
     ord = order(agg$x, decreasing = T)
@@ -587,7 +588,7 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold), fill = group))+
     ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
                                                                                                                                                  paste0("p < ", p.threshold)))+
-    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()
+    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()+ ggplot2::theme(legend.title=ggplot2::element_blank())
 
   if(missing(labels)){
     p = p+ ggplot2::labs(x = "Change Name", y = paste0("Difference from Original ", toPlot$stat.name[1]))
