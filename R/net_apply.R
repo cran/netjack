@@ -278,13 +278,13 @@ setMethod("to_data_frame", signature = c(netStatSet = "NetSampleStatSet"),
 #'
 #' This function tests for significant differences from the original network
 #' statistic as a result of the network manipulation. If non-parametric is
-#' chosen, this is done using the Wilcox test, otherwise, Welch's t-test.
+#' chosen, this is done using the Wilcox test, otherwise, t-test.
 #'
 #' @param netSampleStatSet Input \code{NetSampleStatSet}
 #' @param p.adjust character string for requested multiple comparisons
 #'   adjustment. Defaults to Benjamani-Hochberg
 #' @param non.parametric Logical. if true, test is performed using Wilcox test.
-#'   If false, Welch's t-test. Defaults to false.
+#'   If false, t-test. Defaults to false.
 #'
 #' @return A data frame containing original and adjusted p.values, as well as
 #'   differences, labeled with manipulation name.
@@ -309,7 +309,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
     if(non.parametric){
       diffTest = stats::wilcox.test(sub$nets.stats, sub$orig.stat, paired = T)
     }else{
-      diffTest = stats::t.test(subDiff)
+      diffTest = stats::t.test(subDiff, var.equal = T)
     }
     return(data.frame(net.names = name,diff = diffTest$estimate, p = diffTest$p.value))
   }, toPlot = toPlot)
@@ -325,7 +325,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #' This test assesses if the change in the network statistic due to the network
 #' manipulation is significantly different between groups.
 #'
-#' If the sample has 2 groups, this test is performed using Welch's t-test or
+#' If the sample has 2 groups, this test is performed using a t-test or
 #' Wilcox test. If the sample has 3 or more groups, the test is performed using
 #' a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each network
 #' manipulation.
@@ -335,7 +335,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #' @param p.adjust character string for requested multiple comparisons
 #'   adjustment. Defaults to Benjamani-Hochberg
 #' @param non.parametric Logical. if true, test is performed using Wilcox test.
-#'   If false, Welch's t-test. Defaults to false.
+#'   If false, t-test. Defaults to false.
 #'
 #' @return A data frame containing original and adjusted p.values.
 #' @export
@@ -346,28 +346,32 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_diff_test(GlobEff_GroupA_Net, grouping.variable = "group")
- group_diff_test = function(netSampleStatSet,grouping.variable, p.adjust = "BY", non.parametric = F){
-
+ group_diff_test = function(netSampleStatSet,grouping.variable, p.adjust = "BH", non.parametric = F){
   toPlot = to_data_frame(netSampleStatSet)
-
   net.names = names(table(toPlot$net.names))
   form = paste0("subDiff", "~", grouping.variable)
   results = lapply(net.names,FUN = function(name, toPlot){
     sub = toPlot[which(toPlot$net.names == name),]
     sub$subDiff = sub$nets.stat-sub$orig.stat
+    subMeans = stats::aggregate(sub$subDiff, by = sub[grouping.variable], mean, na.rm = T)
     form = stats::as.formula(form)
     if(non.parametric){
       groupTest <- stats::kruskal.test(form, data = sub)
-      return(data.frame(net.names = name, p = groupTest$p.value))
+      toReturn = data.frame(net.names = name, p = groupTest$p.value)
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
-      return(data.frame(net.names = name, p = groupTest$"Pr(>F)"[1]))
+      toReturn = data.frame(net.names = name, p = groupTest$"Pr(>F)"[1])
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }
   }, toPlot = toPlot)
 
   results <- as.data.frame(do.call("rbind", results))
   results$adjusted.p = stats::p.adjust(results$p, method = p.adjust)
-  results$diff =
   return(results)
 }
 
@@ -377,7 +381,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #' assesses if the network statistic is significantly different between groups,
  #' at each network manipulation.
  #'
- #' If the sample has 2 groups, this test is performed using Welch's t-test or
+ #' If the sample has 2 groups, this test is performed using a t-test or
  #' Wilcox test. If the sample has 3 or more groups, the test is performed using
  #' a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each
  #' network manipulation.
@@ -385,9 +389,9 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #' @param netSampleStatSet Input \code{NetSampleStatSet}
  #' @param grouping.variable character name of sample level grouping variable
  #' @param p.adjust character string for requested multiple comparisons
- #'   adjustment. Defaults to Benjamani-Hochberg
+ #'   adjustment. Defaults to none.
  #' @param non.parametric Logical. if true, test is performed using Wilcox test.
- #'   If false, Welch's t-test. Defaults to false.
+ #'   If false, t-test. Defaults to false.
  #'
  #' @return A data frame containing original and adjusted p.values.
  #' @export
@@ -398,7 +402,7 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
  #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
  #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
  #' group_test(GlobEff_GroupA_Net, grouping.variable = "group")
-group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.parametric = F){
+group_test = function(netSampleStatSet, grouping.variable, p.adjust = "none", non.parametric = F){
   toPlot <- to_data_frame(netSampleStatSet)
   form = paste0("nets.stat", "~", grouping.variable)
   form = stats::as.formula(form)
@@ -406,12 +410,19 @@ group_test = function(netSampleStatSet, grouping.variable, p.adjust = "BY", non.
   results = lapply(net.names,FUN = function(name, toPlot){
 
     sub = toPlot[which(toPlot$net.names == name),]
+    subMeans = stats::aggregate(sub$nets.stat, by = sub[grouping.variable], mean, na.rm = T)
     if(non.parametric){
-      groupTest <- stats::kruskal.test(form, sub)
-      return(data.frame(net.names = name, p = groupTest$p.value))
+      groupTest <- stats::kruskal.test(form, data = sub)
+      toReturn = data.frame(net.names = name, p = groupTest$p.value)
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }else{
       groupTest <- stats::anova(stats::lm(form, data = sub))
-      return(data.frame(net.names = name, p = groupTest$"Pr(>F)"[1]))
+      toReturn = data.frame(net.names = name, p = groupTest$"Pr(>F)"[1])
+      toReturn = cbind(toReturn, t(subMeans[,2]))
+      names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+      return(toReturn)
     }
   }, toPlot = toPlot)
 
@@ -441,7 +452,7 @@ utils::globalVariables(c("net.names", "nets.stat", "adjusted.p"))
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' diff_test_ggPlot(GlobEff_GroupA_Net)
-diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F,non.parametric = F){
+diff_test_ggPlot = function(netSampleStatSet, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F,non.parametric = F){
 
 toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- diff_test(netSampleStatSet, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -503,7 +514,7 @@ toPlot = to_data_frame(netSampleStatSet)
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_test_ggPlot(GlobEff_GroupA_Net, "group")
-group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -560,7 +571,7 @@ group_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort =
 #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
 #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
 #' group_diff_test_ggPlot(GlobEff_GroupA_Net, "group")
-group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BY", hide.non.sig = F, non.parametric = F){
+group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
   toPlot = to_data_frame(netSampleStatSet)
   testtoPlot <- group_diff_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
@@ -597,4 +608,8 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
   }
   return(p)
 }
+
+
+
+
 
