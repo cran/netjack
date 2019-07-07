@@ -30,14 +30,6 @@ A \code{list} of \code{Net} objects
 }
 \description{
 These functions take a \code{Net} object, manipulate the network in some way, and return a \code{list} of modified \code{Net} objects.
-
-\code{node_jacknife}. Removes each node in turn from the \code{Net}, and returns a list of jackknifed \code{Net} objects.
-
-\code{network_jackknife} - Removes each subnetwork in turn from the \code{Net}, and returns a list of jackknifed \code{Net} objects
-
-\code{absolute_threshold} - Applies a series of absolute thresholding to target network, returning a binary network.
-
-\code{relative_threshold} -  Applies a relative threshold based on target density to target network
 }
 \examples{
 data(GroupA)

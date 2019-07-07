@@ -20,10 +20,6 @@ Network statistic value
 }
 \description{
 These functions compute a variety of network statistics on single \code{Net} objects.
-
-\code{global_efficiency} - Computes global efficiency. Uses brainGraph implementation \insertCite{brainGraph}{netjack}. Global efficiency originally derived by \insertCite{globEff;textual}{netjack}
-
-\code{modularity} - Computes modularity with a given community partition. Uses \code{igraph} implementation \insertCite{igraph}{netjack}. Modularity originally derived by \insertCite{mod;textual}{netjack}
 }
 \examples{
 data(GroupA)

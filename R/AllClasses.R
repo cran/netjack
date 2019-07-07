@@ -227,9 +227,9 @@ setMethod("show", "NetStatSet",
           function(object){
             cat("Net Statistic Set","\n",
                 "Applied Function: ", object@fun.name, "\n",
-                "Function Arguments: ", do.call(cat,list(object@fun.args, sep = "\n")), "\n",
+                "Function Arguments: ", pretty_print_arg_list(object@fun.args), "\n",
                 "Applied Statistic Function: ", object@stat.fun.name, "\n",
-                "Statistic Function Arguments: ", object@stat.fun.args, "\n",
+                "Statistic Function Arguments: ", pretty_print_arg_list(object@stat.fun.args), "\n",
                 "Original Network Name: ",object@orig.net.name, "\n"
             )
           })
@@ -239,9 +239,9 @@ setMethod("show", "NetSampleStatSet",
           function(object){
             cat("Net Sample Statistic Set","\n",
                 "Applied Function: ", object@fun.name, "\n",
-                "Function Arguments: ", do.call(cat,list(object@fun.args, sep = "\n")), "\n",
+                "Function Arguments: ", pretty_print_arg_list(object@fun.args), "\n",
                 "Applied Statistic Function: ", object@stat.fun.name, "\n",
-                "Statistic Function Arguments: ", object@stat.fun.args, "\n",
+                "Statistic Function Arguments: ", pretty_print_arg_list(object@stat.fun.args), "\n",
                 "Original Network Names: ",object@net.names, "\n"
             )
           })

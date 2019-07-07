@@ -5,8 +5,8 @@
 \title{Group Difference Plots}
 \usage{
 group_diff_test_ggPlot(netSampleStatSet, grouping.variable, labels,
-  sort = "alpha", p.threshold = 0.05, p.adjust = "BH", hide.non.sig = F,
-  non.parametric = F)
+  sort = "alpha", p.threshold = 0.05, p.adjust = "BH",
+  hide.non.sig = F, non.parametric = F)
 }
 \arguments{
 \item{netSampleStatSet}{Input \code{NetSampleStatSet}}

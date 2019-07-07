@@ -12,8 +12,8 @@ net_stat_apply(netSet, net.stat.fun, net.stat.fun.args, net.stat.name)
 \S4method{net_stat_apply}{NetSet}(netSet, net.stat.fun, net.stat.fun.args,
   net.stat.name)
 
-\S4method{net_stat_apply}{NetSampleSet}(netSet, net.stat.fun, net.stat.fun.args,
-  net.stat.name)
+\S4method{net_stat_apply}{NetSampleSet}(netSet, net.stat.fun,
+  net.stat.fun.args, net.stat.name)
 }
 \arguments{
 \item{netSet}{A \code{NetSet} or \code{NetSampleSet} object.}

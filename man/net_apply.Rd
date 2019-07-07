@@ -10,8 +10,8 @@ networks}
 \usage{
 net_apply(network, net.function, net.function.args, orig.net.name)
 
-\S4method{net_apply}{Net,ANY,ANY,ANY}(network, net.function, net.function.args,
-  orig.net.name)
+\S4method{net_apply}{Net,ANY,ANY,ANY}(network, net.function,
+  net.function.args, orig.net.name)
 
 \S4method{net_apply}{NetSample,ANY,ANY,missing}(network, net.function,
   net.function.args, orig.net.name)

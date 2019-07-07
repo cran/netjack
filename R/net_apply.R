@@ -375,6 +375,65 @@ diff_test = function(netSampleStatSet, p.adjust = "BH", non.parametric = F){
   return(results)
 }
 
+
+ #' Group percentage difference test
+ #'
+ #' This function implements the group percentage difference test on a network statistic.
+ #' This test assesses if the percent change in the network statistic due to the network
+ #' manipulation is significantly different between groups. Percent change is calculated
+ #' as the difference between the target and original statistic divided by the original statistic.
+ #'
+ #' If the sample has 2 groups, this test is performed using a t-test or
+ #' Wilcox test. If the sample has 3 or more groups, the test is performed using
+ #' a 1-way ANOVA, or Kruskal-Wallis test. Differences are tested at each network
+ #' manipulation.
+ #'
+ #' @param netSampleStatSet Input \code{NetSampleStatSet}
+ #' @param grouping.variable character name of sample level grouping variable
+ #' @param p.adjust character string for requested multiple comparisons
+ #'   adjustment. Defaults to Benjamani-Hochberg
+ #' @param non.parametric Logical. if true, test is performed using Wilcox test.
+ #'   If false, t-test. Defaults to false.
+ #'
+ #' @return A data frame containing original and adjusted p.values.
+ #' @export
+ #' @examples
+ #' data(GroupA)
+ #' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+ #'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+ #' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+ #' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+ #' group_diff_test(GlobEff_GroupA_Net, grouping.variable = "group")
+ group_perc_diff_test = function(netSampleStatSet,grouping.variable, p.adjust = "BH", non.parametric = F){
+   toPlot = to_data_frame(netSampleStatSet)
+   net.names = names(table(toPlot$net.names))
+   form = paste0("subDiff", "~", grouping.variable)
+   results = lapply(net.names,FUN = function(name, toPlot){
+     sub = toPlot[which(toPlot$net.names == name),]
+     sub$subDiff = (sub$nets.stat-sub$orig.stat)/sub$orig.stat
+     subMeans = stats::aggregate(sub$subDiff, by = sub[grouping.variable], mean, na.rm = T)
+     form = stats::as.formula(form)
+     if(non.parametric){
+       groupTest <- stats::kruskal.test(form, data = sub)
+       toReturn = data.frame(net.names = name, p = groupTest$p.value)
+       toReturn = cbind(toReturn, t(subMeans[,2]))
+       names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+       return(toReturn)
+     }else{
+       groupTest <- stats::anova(stats::lm(form, data = sub))
+       toReturn = data.frame(net.names = name, p = groupTest$"Pr(>F)"[1])
+       toReturn = cbind(toReturn, t(subMeans[,2]))
+       names(toReturn)[3:length(names(toReturn))] = subMeans[,1]
+       return(toReturn)
+     }
+   }, toPlot = toPlot)
+
+   results <- as.data.frame(do.call("rbind", results))
+   results$adjusted.p = stats::p.adjust(results$p, method = p.adjust)
+   return(results)
+ }
+
+
  #' Group test
  #'
  #' This function implements the group test on a network statistic. This test
@@ -610,6 +669,61 @@ group_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, s
 }
 
 
+#' Group Percentage Difference Plots
+#'
+#' This function performs the group percentage difference test and generates a ggplot object representing the results.
+#'
+#' @inheritParams group_diff_test
+#' @param labels ggplot2 labs object. Labels for the plot
+#' @param sort one of "alpha", "mag"; "alpha" sorts in alpha numeric order, while "mag" sorts in order of decreasing effect size
+#' @param p.threshold Numeric. Threshold by which to highlight results. Defaults to .05
+#' @param hide.non.sig Logical. If true, non significant (as defined by p.threshold) are not plotted.
+#'
+#' @return A ggplot object
+#' @export
+#' @examples
+#' data(GroupA)
+#' GroupA_Net = as_NetSample(GroupA, 1:20, node.variables = list(community = c(rep(1, 10), rep(2,10))),
+#'   sample.variables = list(group = c(rep(1, 10), rep(2,10))))
+#' Jackknife_GroupA_Net = net_apply(GroupA_Net, node_jackknife)
+#' GlobEff_GroupA_Net = net_stat_apply(Jackknife_GroupA_Net, global_efficiency)
+#' group_perc_diff_test_ggPlot(GlobEff_GroupA_Net, "group")
+group_perc_diff_test_ggPlot = function(netSampleStatSet, grouping.variable, labels, sort = "alpha", p.threshold = .05, p.adjust = "BH", hide.non.sig = F, non.parametric = F){
 
+  toPlot = to_data_frame(netSampleStatSet)
+  testtoPlot <- group_perc_diff_test(netSampleStatSet,grouping.variable = grouping.variable, p.adjust = p.adjust, non.parametric = non.parametric)
+  toPlot = merge(toPlot, testtoPlot, by = "net.names")
+
+  if(sort == "alpha"){
+    if(!any(is.na(as.numeric(toPlot$net.names)))){
+      toPlot$net.names = factor(toPlot$net.names, levels =  sort(unique(levels(toPlot$net.names)[as.numeric(toPlot$net.names)]),decreasing = T))
+    }
+  }
+  if(sort == "mag"){
+    agg <- stats::aggregate(toPlot$adjusted.p, by = toPlot["net.names"], mean, na.rm = T)
+    ord = order(agg$x, decreasing = T)
+    toPlot$net.names = factor(toPlot$net.names, levels =  agg$net.names[ord])
+  }
+
+  if(!hide.non.sig){
+    toPlot$p.thres = T
+  }else{
+    toPlot$p.thres = FALSE
+    toPlot$p.thres[which(toPlot$adjusted.p < p.threshold)] = TRUE
+  }
+  group = as.factor(toPlot[,grouping.variable])
+  toPlot$diff = toPlot$nets.stat - toPlot$orig.stat
+  p = ggplot2::ggplot(toPlot[toPlot$p.thres,], ggplot2::aes(x = as.factor(net.names), y = diff, color = (adjusted.p < p.threshold), fill = group))+
+    ggplot2::geom_boxplot() + ggplot2::coord_flip() + ggplot2::scale_color_manual(values = c("FALSE" ="black", "TRUE" ="red"),name = "Significant\nDifferences", labels = c(paste0("p > ", p.threshold),
+                                                                                                                                                                            paste0("p < ", p.threshold)))+
+    ggplot2::scale_fill_discrete(name = "Group")+ggplot2::theme_classic()+ ggplot2::theme(legend.title=ggplot2::element_blank())
+
+  if(missing(labels)){
+    p = p+ ggplot2::labs(x = "Change Name", y = paste0("Percentage Difference from Original ", toPlot$stat.name[1]))
+  }else{
+    p = p + labels
+  }
+  return(p)
+}
 
 
